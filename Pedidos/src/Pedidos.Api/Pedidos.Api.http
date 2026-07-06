@@ -1,0 +1,41 @@
+@Pedidos.Api_HostAddress = http://localhost:5019
+
+### Listar pedidos
+GET {{Pedidos.Api_HostAddress}}/api/pedidos
+Accept: application/json
+
+### Buscar pedido por id
+GET {{Pedidos.Api_HostAddress}}/api/pedidos/1
+Accept: application/json
+
+### Criar pedido
+POST {{Pedidos.Api_HostAddress}}/api/pedidos
+Content-Type: application/json
+
+{
+  "nomeCliente": "Maria Silva",
+  "emailCliente": "maria@teste.com",
+  "pago": true,
+  "itensPedido": [
+    { "idProduto": 10, "nomeProduto": "Produto A", "valorUnitario": 50.0, "quantidade": 2 },
+    { "idProduto": 11, "nomeProduto": "Produto B", "valorUnitario": 25.5, "quantidade": 1 }
+  ]
+}
+
+### Atualizar pedido
+PUT {{Pedidos.Api_HostAddress}}/api/pedidos/1
+Content-Type: application/json
+
+{
+  "nomeCliente": "Maria Silva Souza",
+  "emailCliente": "maria@teste.com",
+  "pago": false,
+  "itensPedido": [
+    { "idProduto": 20, "nomeProduto": "Produto C", "valorUnitario": 10.0, "quantidade": 3 }
+  ]
+}
+
+### Remover pedido
+DELETE {{Pedidos.Api_HostAddress}}/api/pedidos/1
+
+###

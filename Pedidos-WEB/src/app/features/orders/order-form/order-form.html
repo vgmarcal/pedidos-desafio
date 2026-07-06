@@ -1,0 +1,157 @@
+<section class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">{{ isEdit() ? 'Editar pedido' : 'Novo pedido' }}</h2>
+  <a class="btn btn-link" routerLink="/pedidos">Voltar para a lista</a>
+</section>
+
+@if (error()) {
+  <div class="alert alert-danger">{{ error() }}</div>
+}
+
+@if (loading()) {
+  <p class="text-secondary">Carregando pedido…</p>
+} @else {
+  <form class="card card-body" #f="ngForm" (ngSubmit)="save(f)" novalidate>
+    <div class="row g-3 align-items-end">
+      <div class="col-md-5">
+        <label class="form-label" for="clientName">Nome do cliente</label>
+        <input
+          class="form-control"
+          id="clientName"
+          name="clientName"
+          type="text"
+          [(ngModel)]="order.clientName"
+          required
+          maxlength="200"
+          #clientName="ngModel"
+          [class.is-invalid]="clientName.touched && clientName.invalid"
+          placeholder="Ex.: Maria Silva"
+        />
+        <div class="invalid-feedback">Informe o nome do cliente.</div>
+      </div>
+
+      <div class="col-md-5">
+        <label class="form-label" for="clientEmail">E-mail do cliente</label>
+        <input
+          class="form-control"
+          id="clientEmail"
+          name="clientEmail"
+          type="email"
+          [(ngModel)]="order.clientEmail"
+          required
+          email
+          maxlength="200"
+          #clientEmail="ngModel"
+          [class.is-invalid]="clientEmail.touched && clientEmail.invalid"
+          placeholder="Ex.: maria@teste.com"
+        />
+        <div class="invalid-feedback">Informe um e-mail válido.</div>
+      </div>
+
+      <div class="col-md-2">
+        <div class="form-check mb-2">
+          <input class="form-check-input" id="isPaid" name="isPaid" type="checkbox" [(ngModel)]="order.isPaid" />
+          <label class="form-check-label" for="isPaid">Pedido pago</label>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="fs-6 fw-semibold mt-4 mb-2">Itens do pedido</h3>
+
+    <!-- track $index: com ngModel dentro de loop, o índice mantém os names
+         dos campos estáveis por posição ao remover itens. -->
+    @for (item of order.items; track $index; let i = $index) {
+      <div class="row g-2 align-items-end border-bottom py-2">
+        <div class="col-md-2">
+          <label class="form-label" [for]="'productId' + i">Código do produto</label>
+          <input
+            class="form-control"
+            [id]="'productId' + i"
+            [name]="'productId' + i"
+            type="number"
+            min="1"
+            [(ngModel)]="item.productId"
+            required
+            #productId="ngModel"
+            [class.is-invalid]="productId.touched && productId.invalid"
+          />
+          <div class="invalid-feedback">Código inválido.</div>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label" [for]="'productName' + i">Nome do produto</label>
+          <input
+            class="form-control"
+            [id]="'productName' + i"
+            [name]="'productName' + i"
+            type="text"
+            [(ngModel)]="item.productName"
+            required
+            maxlength="200"
+            #productName="ngModel"
+            [class.is-invalid]="productName.touched && productName.invalid"
+            placeholder="Ex.: Teclado mecânico"
+          />
+          <div class="invalid-feedback">Informe o nome do produto.</div>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label" [for]="'unitPrice' + i">Valor unitário</label>
+          <input
+            class="form-control"
+            [id]="'unitPrice' + i"
+            [name]="'unitPrice' + i"
+            type="number"
+            min="0"
+            step="0.01"
+            [(ngModel)]="item.unitPrice"
+            required
+            #unitPrice="ngModel"
+            [class.is-invalid]="unitPrice.touched && unitPrice.invalid"
+          />
+          <div class="invalid-feedback">Valor inválido.</div>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label" [for]="'quantity' + i">Quantidade</label>
+          <input
+            class="form-control"
+            [id]="'quantity' + i"
+            [name]="'quantity' + i"
+            type="number"
+            min="1"
+            [(ngModel)]="item.quantity"
+            required
+            #quantity="ngModel"
+            [class.is-invalid]="quantity.touched && quantity.invalid"
+          />
+          <div class="invalid-feedback">Mínimo 1.</div>
+        </div>
+
+        <div class="col-md-2 text-end">
+          <button
+            class="btn btn-link btn-sm text-danger"
+            type="button"
+            (click)="removeItem(i)"
+            [disabled]="order.items.length === 1"
+          >
+            Remover
+          </button>
+        </div>
+      </div>
+    }
+
+    <div class="mt-3">
+      <button class="btn btn-outline-secondary" type="button" (click)="addItem()">Adicionar item</button>
+    </div>
+
+    <footer class="d-flex justify-content-between align-items-center border-top mt-4 pt-3">
+      <strong class="fs-5">Total: {{ total | currency: 'BRL' }}</strong>
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" routerLink="/pedidos">Cancelar</a>
+        <button class="btn btn-primary" type="submit" [disabled]="saving()">
+          {{ saving() ? 'Salvando…' : 'Salvar pedido' }}
+        </button>
+      </div>
+    </footer>
+  </form>
+}

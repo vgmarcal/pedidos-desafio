@@ -1,0 +1,11 @@
+node_modules
+dist
+.angular
+.git
+.claude
+.vscode
+README.md
+GUIA-ANGULAR-VUE.md
+serve.cmd
+Dockerfile
+docker-compose.yml

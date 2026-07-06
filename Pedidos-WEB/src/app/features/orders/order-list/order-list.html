@@ -1,0 +1,85 @@
+<section class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">Pedidos</h2>
+  <a class="btn btn-primary" routerLink="/pedidos/novo">Novo pedido</a>
+</section>
+
+@if (error()) {
+  <div class="alert alert-danger d-flex justify-content-between align-items-center">
+    {{ error() }}
+    <button class="btn btn-sm btn-outline-danger" type="button" (click)="load()">Tentar novamente</button>
+  </div>
+}
+
+@if (loading()) {
+  <p class="text-secondary">Carregando pedidos…</p>
+} @else if (orders().length === 0 && !error()) {
+  <div class="card">
+    <div class="card-body text-center p-5">
+      <p class="text-secondary">Nenhum pedido cadastrado ainda.</p>
+      <a class="btn btn-primary" routerLink="/pedidos/novo">Cadastrar o primeiro pedido</a>
+    </div>
+  </div>
+} @else if (orders().length > 0) {
+  <div class="card">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Cliente</th>
+          <th>E-mail</th>
+          <th>Pago</th>
+          <th class="text-end">Valor total</th>
+          <th class="text-end">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (order of orders(); track order.id) {
+          <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.clientName }}</td>
+            <td>{{ order.clientEmail }}</td>
+            <td>
+              <span class="badge" [class]="order.isPaid ? 'text-bg-success' : 'text-bg-warning'">
+                {{ order.isPaid ? 'Pago' : 'Pendente' }}
+              </span>
+            </td>
+            <td class="text-end">{{ order.totalPrice | currency: 'BRL' }}</td>
+            <td class="text-end text-nowrap">
+              <button class="btn btn-link btn-sm" type="button" (click)="toggleItems(order.id)">
+                {{ expandedId() === order.id ? 'Ocultar itens' : 'Ver itens' }}
+              </button>
+              <a class="btn btn-link btn-sm" [routerLink]="['/pedidos', order.id, 'editar']">Editar</a>
+              <button class="btn btn-link btn-sm text-danger" type="button" (click)="remove(order)">Excluir</button>
+            </td>
+          </tr>
+          @if (expandedId() === order.id) {
+            <tr>
+              <td colspan="6" class="bg-body-tertiary px-4">
+                <table class="table table-sm mb-2 small">
+                  <thead>
+                    <tr>
+                      <th>Produto</th>
+                      <th class="text-end">Valor unitário</th>
+                      <th class="text-end">Quantidade</th>
+                      <th class="text-end">Subtotal</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (item of order.items; track item.id) {
+                      <tr>
+                        <td>{{ item.productName }}</td>
+                        <td class="text-end">{{ item.unitPrice | currency: 'BRL' }}</td>
+                        <td class="text-end">{{ item.quantity }}</td>
+                        <td class="text-end">{{ item.unitPrice * item.quantity | currency: 'BRL' }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+}

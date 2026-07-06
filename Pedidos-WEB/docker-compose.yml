@@ -1,0 +1,21 @@
+# Sobe o sistema COMPLETO: front (nginx) + API .NET + SQL Server.
+#
+# O "include" reaproveita o docker-compose.yml da API (repo irmão ../Pedidos),
+# que define os serviços "api" e "sqlserver" — aqui só acrescentamos o front.
+# Requisito: o repositório Pedidos precisa estar clonado ao lado deste.
+#
+# Uso:
+#   docker compose up --build -d
+#   Front:   http://localhost:8081
+#   API:     http://localhost:8080/swagger
+include:
+  - ../Pedidos/docker-compose.yml
+
+services:
+  web:
+    build: .
+    container_name: pedidos-web
+    depends_on:
+      - api
+    ports:
+      - "8081:80"
